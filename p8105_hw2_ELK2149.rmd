@@ -37,7 +37,8 @@ snp_df =
     read_csv("./fivethirtyeight_datasets/snp.csv", na = c("NA", ".")) |>
   janitor::clean_names()  |> 
   separate(date, into = c("year", "month", "day"), sep = "/", convert = TRUE) |> 
-  arrange(year, month)
+  arrange(year, month) |> 
+  select(year, month, everything(), -day)
 
 snp_df
 ```
