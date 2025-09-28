@@ -12,11 +12,25 @@ author: Evan Kennedy, ELK2149
 library(moderndive)
 library(tidyverse)
 
-# **Problem 1** 
+```
 
-#extracting data
-pols_month_df = read_csv(file = "./fivethirtyeight_datasets/pols-month.csv")
-unemployment_df = read_csv(file = "./fivethirtyeight_datasets/unemployment.csv")
-snp_df = read_csv(file = "./fivethirtyeight_datasets/snp.csv")
+*** Problem 1 ***
+
+```{r}
+pols_month_df = 
+    read_csv("./fivethirtyeight_datasets/pols-month.csv", na = c("NA", ".")) |>
+  janitor::clean_names()
+```
+
+```{r}
+unemployment_df = 
+    read_csv("./fivethirtyeight_datasets/unemployment.csv", na = c("NA", ".")) |>
+  janitor::clean_names()
+```
+
+```{r}
+snp_df = 
+    read_csv("./fivethirtyeight_datasets/snp.csv", na = c("NA", ".")) |>
+  janitor::clean_names()
 ```
 
