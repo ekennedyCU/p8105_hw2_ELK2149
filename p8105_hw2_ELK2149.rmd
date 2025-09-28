@@ -19,18 +19,36 @@ library(tidyverse)
 ```{r}
 pols_month_df = 
     read_csv("./fivethirtyeight_datasets/pols-month.csv", na = c("NA", ".")) |>
-  janitor::clean_names()
+  janitor::clean_names() |> 
+  separate(mon, into = c("year", "month", "day"), sep = "-", convert = TRUE) |> 
+  mutate(month = month.name[month]) |> 
+  mutate(
+    president = case_when(
+      prez_dem == 1 ~ "dem",
+      prez_gop == 1 ~ "gop")
+) |> 
+  select(-prez_dem, -prez_gop, -day)
+  
+pols_month_df
+```
+
+```{r}
+snp_df = 
+    read_csv("./fivethirtyeight_datasets/snp.csv", na = c("NA", ".")) |>
+  janitor::clean_names()  |> 
+  separate(date, into = c("year", "month", "day"), sep = "/", convert = TRUE) |> 
+  arrange(year, month)
+
+snp_df
 ```
 
 ```{r}
 unemployment_df = 
     read_csv("./fivethirtyeight_datasets/unemployment.csv", na = c("NA", ".")) |>
   janitor::clean_names()
+
+unemployment_df
 ```
 
-```{r}
-snp_df = 
-    read_csv("./fivethirtyeight_datasets/snp.csv", na = c("NA", ".")) |>
-  janitor::clean_names()
-```
+
 
