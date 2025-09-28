@@ -11,12 +11,15 @@ author: Evan Kennedy, ELK2149
 #opening necessary libraries
 library(moderndive)
 library(tidyverse)
+library(dplyr)
 
 ```
 
 *** Problem 1 ***
 
 ```{r}
+#separating out date variable, converting month into names of month, converting prez_dem and prez_gop into a single variable, and removing them along with day.
+
 pols_month_df = 
     read_csv("./fivethirtyeight_datasets/pols-month.csv", na = c("NA", ".")) |>
   janitor::clean_names() |> 
@@ -33,10 +36,14 @@ pols_month_df
 ```
 
 ```{r}
+
+#separating out date variable by /, arranging but year, month, removing day to mirror above data frame.
 snp_df = 
     read_csv("./fivethirtyeight_datasets/snp.csv", na = c("NA", ".")) |>
   janitor::clean_names()  |> 
-  separate(date, into = c("year", "month", "day"), sep = "/", convert = TRUE) |> 
+  separate(date, into = c("month", "day", "year"), sep = "/", convert = TRUE) |> 
+  mutate(year = ifelse(year >= 47, year + 1900, year + 2000)) |> 
+  mutate(month = month.name[month]) |>
   arrange(year, month) |> 
   select(year, month, everything(), -day)
 
@@ -46,7 +53,27 @@ snp_df
 ```{r}
 unemployment_df = 
     read_csv("./fivethirtyeight_datasets/unemployment.csv", na = c("NA", ".")) |>
-  janitor::clean_names()
+  janitor::clean_names() |> 
+  pivot_longer(
+    jan:dec,
+    names_to = "month", 
+    values_to = "%_UnEmp") |> 
+ mutate(month = case_match(
+    month,
+    "jan" ~ "January",
+    "feb" ~ "February",
+    "mar" ~ "March",
+    "apr" ~ "April",
+    "may" ~ "May",
+    "jun" ~ "June",
+    "jul" ~ "July",
+    "aug" ~ "August",
+    "sep" ~ "September",
+    "oct" ~ "October",
+    "nov" ~ "November",
+    "dec" ~ "December")
+ )
+    
 
 unemployment_df
 ```
