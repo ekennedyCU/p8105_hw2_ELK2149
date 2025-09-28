@@ -37,20 +37,22 @@ pols_month_df
 
 ```{r}
 
-#separating out date variable by /, arranging but year, month, removing day to mirror above data frame.
+#separating out date variable by /, converting year to YYYY, converting month to character format, arranging buy year, month, removing day to mirror above data frame.
 snp_df = 
     read_csv("./fivethirtyeight_datasets/snp.csv", na = c("NA", ".")) |>
   janitor::clean_names()  |> 
   separate(date, into = c("month", "day", "year"), sep = "/", convert = TRUE) |> 
   mutate(year = ifelse(year >= 47, year + 1900, year + 2000)) |> 
   mutate(month = month.name[month]) |>
-  arrange(year, month) |> 
+  arrange(year) |> 
   select(year, month, everything(), -day)
 
 snp_df
 ```
 
 ```{r}
+
+# pivoting long, converting month name to be consistent with other data sets.
 unemployment_df = 
     read_csv("./fivethirtyeight_datasets/unemployment.csv", na = c("NA", ".")) |>
   janitor::clean_names() |> 
@@ -73,10 +75,28 @@ unemployment_df =
     "nov" ~ "November",
     "dec" ~ "December")
  )
-    
 
 unemployment_df
 ```
+
+```{r}
+#join SNP into POLS
+
+pols_snp_df = 
+  left_join(pols_month_df, snp_df, by = c("year", "month"))
+
+pols_snp_df
+
+#join unemployment
+
+pols_snp_unemp_df = 
+  left_join(pols_snp_df, unemployment_df, by = c("year", "month"))
+
+pols_snp_unemp_df
+
+```
+
+The variables in this dataset are: `r (names(pols_snp_unemp_df))`. The data was collected between the dates of `r min(pols_snp_unemp_df$year)` and `r max(pols_snp_unemp_df$year)`. The dataset has `r nrow(pols_snp_unemp_df)` rows and `r ncol(pols_snp_unemp_df)` columns. pols_month_df contains data relating to the number of federal representatives, senators, state governors and president who represent each party in a given month and year. snp_df contains data on the S&P stock market score, by month and year. unemployment_df provides the percent of unemployment in the united states by month and year. 
 
 
 
