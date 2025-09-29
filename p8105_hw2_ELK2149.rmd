@@ -13,6 +13,7 @@ library(moderndive)
 library(tidyverse)
 library(dplyr)
 library(readxl)
+library(knitr)
 
 ```
 
@@ -169,10 +170,57 @@ full_zip_df =
 full_zip_df = 
   full_zip_df |> 
   mutate(date = str_remove(date, "^x")) |> 
+  separate(date, into = c("year", "month", "day"), sep = "_", convert = TRUE) |>
+  mutate(month = month.name[month]) |> 
   select(
-    zip_code, date, county, neighborhood, city, state, zori, everything(), -state_fips,
+    zip_code, year, month, day, county, neighborhood, city, state, zori, everything(), -state_fips,
     -county_code, -region_type, -state_name, -metro, -file_date, -county_name
   )
 
+```
+
+The variables in this dataset are: `r (names(full_zip_df))`. The data was collected between the dates of `r min(full_zip_df$year, na.rm=TRUE)` and `r max(full_zip_df$year, na.rm=TRUE)`. The dataset has a total of `r nrow(full_zip_df)` observations. 
+
+The following is a list of zip codes not in the Zillow rental price dataset:
+`r paste(unique(full_zip_df$zip_code[is.na(full_zip_df$size_rank)]))`
+
+These are likely not in the zillow rental price dataset, because they are predominantly non-residential areas. For instance, 10464 is Pelham Bay Park, and 11414 is mostly cross bay blvd, a highway that extends across Jamaica Bay.
+
+In Jan 2020, average rent cost was `r mean(full_zip_df$zori[full_zip_df$year == 2020 & full_zip_df$month == "January"], na.rm = TRUE)` with a range of `r min(full_zip_df$zori[full_zip_df$year == 2020 & full_zip_df$month == "January"], na.rm = TRUE)` to `r max(full_zip_df$zori[full_zip_df$year == 2020 & full_zip_df$month == "January"], na.rm = TRUE)`. 
+
+In Jan 2021, average rent cost was `r mean(full_zip_df$zori[full_zip_df$year == 2021 & full_zip_df$month == "January"], na.rm = TRUE)` with a range of `r min(full_zip_df$zori[full_zip_df$year == 2021 & full_zip_df$month == "January"], na.rm = TRUE)` to `r max(full_zip_df$zori[full_zip_df$year == 2021 & full_zip_df$month == "January"], na.rm = TRUE)`. 
+
+```{r}
+Jan_compare_df = 
+  full_zip_df |> 
+  filter(month == "January", year %in% c(2020, 2021)) |> 
+  select(zip_code, county, neighborhood, year, zori) |> 
+  tidyr::pivot_wider(
+    names_from = year,
+    values_from = zori,
+    names_prefix = "zori_"
+  )
+```
+
+```{r}
+Jan_compare_df =
+  Jan_compare_df |> 
+   mutate(
+    zori_diff = zori_2021 - zori_2020
+  )
+```
+
+```{r}
+top_drops = 
+  Jan_compare_df |> 
+  arrange(zori_diff) |> 
+  slice_head(n = 10) |> 
+  select(zip_code, county, neighborhood, zori_2020, zori_2021, zori_diff)
+
+kable(
+  top_drops,
+  caption = "Top 10 ZIP Codes with Largest Rental Price Drops",
+  col.names = c("ZIP Code", "Borough", "Neighborhood", "ZORI 2020", "ZORI 2021", "Change")
+)
 ```
 
