@@ -189,7 +189,9 @@ full_zip_df =
 
 ```
 
-The variables in this dataset are: `r (names(full_zip_df))`. The data was collected between the dates of `r min(full_zip_df$year, na.rm=TRUE)` and `r max(full_zip_df$year, na.rm=TRUE)`. The dataset has a total of `r nrow(full_zip_df)` observations. 
+The variables in this dataset are: `r (names(full_zip_df))`. The data was collected between the dates of `r min(full_zip_df$year, na.rm=TRUE)` and `r max(full_zip_df$year, na.rm=TRUE)`. 
+
+The dataset has a total of `r nrow(full_zip_df)` observations. There are `r dplyr::n_distinct(full_zip_df$zip_code)` distinct zipcodes identified in this data set, and `r dplyr::n_distinct(full_zip_df$neighborhood)` neighborhoods.
 
 The following is a list of zip codes not in the Zillow rental price dataset:
 `r paste(unique(full_zip_df$zip_code[is.na(full_zip_df$size_rank)]))`
