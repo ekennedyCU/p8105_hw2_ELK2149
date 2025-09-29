@@ -140,3 +140,17 @@ total_trash_df =
 
 The variables in this dataset are: `r (names(total_trash_df))`. The data was collected between the dates of `r min(total_trash_df$year)` and `r max(total_trash_df$year)`. The dataset has a total of `r nrow(total_trash_df)` observations. The total weight of trash collected by Professor Trash Dumpster was  `r sum(professor_trash_df$weight)` tons. The total number of cigarette butts, collected by Gwynnda Trash Dumpster was `r format(sum(gwynnda_trash_df$cigarette_butts[gwynnda_trash_df$year == 2022 & gwynnda_trash_df$month == "June"]), scientific = FALSE)`.
 
+
+*** Problem 3 ***
+
+```{r}
+zip_codes_df = 
+    read_csv("./zillow_data/Zip Codes.csv", na = c("NA", ".")) |>
+  janitor::clean_names()
+```
+
+```{r}
+zip_zori_df = 
+    read_csv("./zillow_data/Zip_zori.csv", na = c("NA", ".")) |>
+  janitor::clean_names()
+```
