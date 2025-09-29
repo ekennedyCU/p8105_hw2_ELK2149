@@ -103,16 +103,40 @@ The variables in this dataset are: `r (names(pols_snp_unemp_df))`. The data was 
 *** Problem 2 ***
 
 ```{r}
-trash_df = 
+mr_trash_df = 
   read_excel("./Trash_Data.xlsx", sheet = "Mr. Trash Wheel", range = "A2:N653", na = c("NA", ".")) |>
   janitor::clean_names() |> 
-  rename (
-    weight = weight_tons,
-    volume = volume_cubic_yards
-  )
-  
-    
-head(trash_df, 5)
+  rename(weight = weight_tons, volume = volume_cubic_yards) |> 
+  mutate(sports_balls = as.integer(round(sports_balls)),
+         trash_wheel_name = "Mr",
+         year = as.numeric(year)
+         )
 
 ```
+
+```{r}
+professor_trash_df = 
+  read_excel("./Trash_Data.xlsx", sheet = "Professor Trash Wheel", range = "A2:M120", na = c("NA", ".")) |>
+  janitor::clean_names() |> 
+  rename(weight = weight_tons, volume = volume_cubic_yards) |> 
+  mutate(trash_wheel_name = "Prof")
+
+```
+
+```{r}
+gwynnda_trash_df = 
+  read_excel("./Trash_Data.xlsx", sheet = "Gwynnda Trash Wheel", range = "A2:L265", na = c("NA", ".")) |>
+  janitor::clean_names() |> 
+  rename(weight = weight_tons, volume = volume_cubic_yards) |> 
+  mutate(trash_wheel_name = "Gwynnda")
+
+```
+
+
+```{r}
+total_trash_df = 
+  bind_rows(mr_trash_df, professor_trash_df, gwynnda_trash_df)
+```
+
+The variables in this dataset are: `r (names(total_trash_df))`. The data was collected between the dates of `r min(total_trash_df$year)` and `r max(total_trash_df$year)`. The dataset has a total of `r nrow(total_trash_df)` observations. The total weight of trash collected by Professor Trash Dumpster was  `r sum(professor_trash_df$weight)` tons. The total number of cigarette butts, collected by Gwynnda Trash Dumpster was `r format(sum(gwynnda_trash_df$cigarette_butts[gwynnda_trash_df$year == 2022 & gwynnda_trash_df$month == "June"]), scientific = FALSE)`.
 
