@@ -104,6 +104,7 @@ The variables in this dataset are: `r (names(pols_snp_unemp_df))`. The data was 
 *** Problem 2 ***
 
 ```{r}
+# cleaning names, renaming weight and volume to simpler names, converting sports_balls to an interger, creating a categorical variable to differentiate data sets, turning year numeric to be congruent with other datasets.
 mr_trash_df = 
   read_excel("./Trash_Data.xlsx", sheet = "Mr. Trash Wheel", range = "A2:N653", na = c("NA", ".")) |>
   janitor::clean_names() |> 
@@ -116,6 +117,7 @@ mr_trash_df =
 ```
 
 ```{r}
+# cleaning names, making weight and volume similar to past data set, creating categorical identifier for this data set
 professor_trash_df = 
   read_excel("./Trash_Data.xlsx", sheet = "Professor Trash Wheel", range = "A2:M120", na = c("NA", ".")) |>
   janitor::clean_names() |> 
@@ -125,6 +127,7 @@ professor_trash_df =
 ```
 
 ```{r}
+# cleaning names, making weight and volume similar to past data set, creating categorical identifier for this data set
 gwynnda_trash_df = 
   read_excel("./Trash_Data.xlsx", sheet = "Gwynnda Trash Wheel", range = "A2:L265", na = c("NA", ".")) |>
   janitor::clean_names() |> 
@@ -135,6 +138,7 @@ gwynnda_trash_df =
 
 
 ```{r}
+# binding datasets together (there is no variable to join them by as they are separate bins)
 total_trash_df = 
   bind_rows(mr_trash_df, professor_trash_df, gwynnda_trash_df)
 ```
@@ -145,12 +149,16 @@ The variables in this dataset are: `r (names(total_trash_df))`. The data was col
 *** Problem 3 ***
 
 ```{r}
+
+# cleaning names for zip codes dataset
 zip_codes_df = 
     read_csv("./zillow_data/Zip Codes.csv", na = c("NA", ".")) |>
   janitor::clean_names()
 ```
 
 ```{r}
+# cleaning names for zillow dataset, pivoting long for zori scores across dates, changing zip_code column name to faciliate joining
+
 zip_zori_df = 
     read_csv("./zillow_data/Zip_zori.csv", na = c("NA", ".")) |>
   janitor::clean_names() |> 
@@ -162,11 +170,13 @@ zip_zori_df =
 ```
 
 ```{r}
+# joining datasets
 full_zip_df = 
   left_join(zip_codes_df, zip_zori_df, by = "zip_code")
 ```
 
 ```{r}
+# cleaning dataset for redundant variables, separating out year month and day for upcoming analysis, regordering columns for ease of reading
 full_zip_df = 
   full_zip_df |> 
   mutate(date = str_remove(date, "^x")) |> 
@@ -191,6 +201,7 @@ In Jan 2020, average rent cost was `r mean(full_zip_df$zori[full_zip_df$year == 
 In Jan 2021, average rent cost was `r mean(full_zip_df$zori[full_zip_df$year == 2021 & full_zip_df$month == "January"], na.rm = TRUE)` with a range of `r min(full_zip_df$zori[full_zip_df$year == 2021 & full_zip_df$month == "January"], na.rm = TRUE)` to `r max(full_zip_df$zori[full_zip_df$year == 2021 & full_zip_df$month == "January"], na.rm = TRUE)`. 
 
 ```{r}
+# pivoting wide to help with comparison between 2020 and 2021 scores
 Jan_compare_df = 
   full_zip_df |> 
   filter(month == "January", year %in% c(2020, 2021)) |> 
@@ -203,6 +214,7 @@ Jan_compare_df =
 ```
 
 ```{r}
+# generating difference scores between 2021 and 2020
 Jan_compare_df =
   Jan_compare_df |> 
    mutate(
@@ -211,6 +223,7 @@ Jan_compare_df =
 ```
 
 ```{r}
+# creating table of top 10 price drops, using Kable for cleaner output
 top_drops = 
   Jan_compare_df |> 
   arrange(zori_diff) |> 
