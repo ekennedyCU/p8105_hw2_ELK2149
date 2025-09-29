@@ -238,4 +238,4 @@ kable(
   col.names = c("ZIP Code", "Borough", "Neighborhood", "ZORI 2020", "ZORI 2021", "Change")
 )
 ```
-
+The largest price drops appear to have occurred in lower Manhattan, within the Borough of New York.
