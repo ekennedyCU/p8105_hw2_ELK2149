@@ -155,13 +155,24 @@ zip_zori_df =
   janitor::clean_names() |> 
   pivot_longer(
     x2015_01_31:x2024_08_31,
-    names_to = "Date", 
-    values_to = "Zori") |> 
+    names_to = "date", 
+    values_to = "zori") |> 
   rename(zip_code = region_name)
 ```
 
 ```{r}
 full_zip_df = 
   left_join(zip_codes_df, zip_zori_df, by = "zip_code")
+```
+
+```{r}
+full_zip_df = 
+  full_zip_df |> 
+  mutate(date = str_remove(date, "^x")) |> 
+  select(
+    zip_code, date, county, neighborhood, city, state, zori, everything(), -state_fips,
+    -county_code, -region_type, -state_name, -metro, -file_date, -county_name
+  )
+
 ```
 
